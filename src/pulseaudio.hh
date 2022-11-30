@@ -85,27 +85,6 @@ public:
     std::list<Device> get_sources();
 
     /**
-     * @return list of the previously stored sinks, sources and clients
-     */
-    std::list<Stream> get_streams();
-
-    /**
-     * @return list of the running sink inputs
-     */
-    std::list<SinkInput>get_sink_inputs();
-
-    /**
-     * Get a specific sink input
-     * @param index index of the sink input
-     */
-    SinkInput get_sink_input(u_int32_t index);
-
-    /**
-     * @return list of clients
-     */
-    std::list<Client>get_clients();
-
-    /**
      * Get a specific sink
      * @param index index of the sink
      */
@@ -147,25 +126,54 @@ public:
     void set_volume(Device& device, pa_volume_t new_volume);
 
     /**
+     * Change the mute state of a device
+     * @param device
+     * @param mute
+     */
+	void set_mute(Device &device, bool mute);
+
+	//#########################  Sink Inputs ##############################################
+
+	/**
+	 * @return list of the running sink inputs
+	 */
+	std::list<SinkInput> get_sink_inputs();
+
+	/**
+	 * Get a specific sink input
+	 * @param index index of the sink input
+	 */
+	SinkInput get_sink_input(u_int32_t index);
+
+
+    /**
 	 * Set the volume to a new value for the specified device
 	 * @param input stream
 	 * @param new_volume new volume
 	 */
     void set_volume(SinkInput& input, pa_volume_t new_volume);
 
-    /**
-     * Change the mute state of a device
-     * @param device
-     * @param mute
-     */
-    void set_mute(Device& device, bool mute);
+	/**
+	 * Change the mute state of a sink input
+	 * @param sink input to mute
+	 * @param mute
+	 */
+	void set_mute(SinkInput &input, bool mute);
+
+	//#########################  Start Stream ##############################################
 
     /**
-     * Change the mute state of a sink input
-     * @param sink input to mute
-     * @param mute
+     * @return list of the previously stored sinks, sources and clients
      */
-    void set_mute(SinkInput& input, bool mute);
+    std::list<Stream> get_streams();
+
+    //#########################  Start Clients ##############################################
+
+    /**
+     * @return list of clients
+     */
+    std::list<Client>get_clients();
+
 };
 
 #endif

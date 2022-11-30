@@ -81,49 +81,6 @@ Pulseaudio::get_sources() {
     return sources;
 }
 
-std::list<Stream>
-Pulseaudio::get_streams(){
-    std::list<Stream> streams;
-    pa_operation* op = pa_ext_stream_restore_read(context, &stream_list_cb, &streams);
-
-    iterate(op);
-    pa_operation_unref(op);
-
-    return streams;
-}
-
-std::list<SinkInput>
-Pulseaudio::get_sink_inputs() {
-    std::list<SinkInput> sinkInputs;
-    pa_operation* op = pa_context_get_sink_input_info_list(context, &sink_input_list_cb, &sinkInputs);
-    iterate(op);
-    pa_operation_unref(op);
-
-    std::list<Client> clients = get_clients();
-
-    return sinkInputs;
-}
-
-SinkInput Pulseaudio::get_sink_input(u_int32_t idx) {
-    std::list<SinkInput> sinkInputs;
-    pa_operation* op = pa_context_get_sink_input_info(context, idx, &sink_input_list_cb, &sinkInputs);
-    iterate(op);
-    pa_operation_unref(op);
-
-    if (sinkInputs.empty()) throw "The sink doesn't exist\n";
-    return *(sinkInputs.begin());
-}
-
-std::list<Client>
-Pulseaudio::get_clients() {
-    std::list<Client> clients;
-    pa_operation* op = pa_context_get_client_info_list(context, &client_list_cb, &clients);
-    iterate(op);
-    pa_operation_unref(op);
-
-    return clients;
-}
-
 Device
 Pulseaudio::get_sink(uint32_t index) {
     std::list<Device> sinks;
@@ -204,6 +161,69 @@ Pulseaudio::set_volume(Device& device, pa_volume_t new_volume) {
 }
 
 void
+Pulseaudio::set_mute(Device& device, bool mute) {
+    pa_operation* op;
+    if (device.type == SINK)
+        op = pa_context_set_sink_mute_by_index(context, device.index, (int) mute, success_cb, NULL);
+    else
+        op = pa_context_set_source_mute_by_index(context, device.index, (int) mute, success_cb, NULL);
+    iterate(op);
+    pa_operation_unref(op);
+}
+
+//################ Start Streams     #######################################################################
+
+std::list<Stream>
+Pulseaudio::get_streams(){
+    std::list<Stream> streams;
+    pa_operation* op = pa_ext_stream_restore_read(context, &stream_list_cb, &streams);
+
+    iterate(op);
+    pa_operation_unref(op);
+
+    return streams;
+}
+
+//################ END Streams       #######################################################################
+
+//################ Start Clients 	 #######################################################################
+
+std::list<Client>
+Pulseaudio::get_clients() {
+    std::list<Client> clients;
+    pa_operation* op = pa_context_get_client_info_list(context, &client_list_cb, &clients);
+    iterate(op);
+    pa_operation_unref(op);
+
+    return clients;
+}
+//################ END Clients       #######################################################################
+
+//################ Start Sink Inputs #######################################################################
+
+std::list<SinkInput>
+Pulseaudio::get_sink_inputs() {
+    std::list<SinkInput> sinkInputs;
+    pa_operation* op = pa_context_get_sink_input_info_list(context, &sink_input_list_cb, &sinkInputs);
+    iterate(op);
+    pa_operation_unref(op);
+
+    std::list<Client> clients = get_clients();
+
+    return sinkInputs;
+}
+
+SinkInput Pulseaudio::get_sink_input(u_int32_t idx) {
+    std::list<SinkInput> sinkInputs;
+    pa_operation* op = pa_context_get_sink_input_info(context, idx, &sink_input_list_cb, &sinkInputs);
+    iterate(op);
+    pa_operation_unref(op);
+
+    if (sinkInputs.empty()) throw "The sink doesn't exist\n";
+    return *(sinkInputs.begin());
+}
+
+void
 Pulseaudio::set_volume(SinkInput& input, pa_volume_t new_volume) {
     if (new_volume > PA_VOLUME_MAX) {
         new_volume = PA_VOLUME_MAX;
@@ -217,20 +237,11 @@ Pulseaudio::set_volume(SinkInput& input, pa_volume_t new_volume) {
 }
 
 void
-Pulseaudio::set_mute(Device& device, bool mute) {
-    pa_operation* op;
-    if (device.type == SINK)
-        op = pa_context_set_sink_mute_by_index(context, device.index, (int) mute, success_cb, NULL);
-    else
-        op = pa_context_set_source_mute_by_index(context, device.index, (int) mute, success_cb, NULL);
-    iterate(op);
-    pa_operation_unref(op);
-}
-
-void
 Pulseaudio::set_mute(SinkInput& sink, bool mute) {
     pa_operation* op;
     op = pa_context_set_sink_input_mute(context, sink.index, (int) mute, success_cb, NULL);
     iterate(op);
     pa_operation_unref(op);
 }
+
+//################ END Sink Inputs #######################################################################
