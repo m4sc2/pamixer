@@ -95,6 +95,12 @@ public:
     std::list<SinkInput>get_sink_inputs();
 
     /**
+     * Get a specific sink input
+     * @param index index of the sink input
+     */
+    SinkInput get_sink_input(u_int32_t index);
+
+    /**
      * @return list of clients
      */
     std::list<Client>get_clients();
@@ -141,11 +147,25 @@ public:
     void set_volume(Device& device, pa_volume_t new_volume);
 
     /**
+	 * Set the volume to a new value for the specified device
+	 * @param input stream
+	 * @param new_volume new volume
+	 */
+    void set_volume(SinkInput& input, pa_volume_t new_volume);
+
+    /**
      * Change the mute state of a device
      * @param device
      * @param mute
      */
     void set_mute(Device& device, bool mute);
+
+    /**
+     * Change the mute state of a sink input
+     * @param sink input to mute
+     * @param mute
+     */
+    void set_mute(SinkInput& input, bool mute);
 };
 
 #endif

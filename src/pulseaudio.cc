@@ -104,6 +104,16 @@ Pulseaudio::get_sink_inputs() {
     return sinkInputs;
 }
 
+SinkInput Pulseaudio::get_sink_input(u_int32_t idx) {
+    std::list<SinkInput> sinkInputs;
+    pa_operation* op = pa_context_get_sink_input_info(context, idx, &sink_input_list_cb, &sinkInputs);
+    iterate(op);
+    pa_operation_unref(op);
+
+    if (sinkInputs.empty()) throw "The sink doesn't exist\n";
+    return *(sinkInputs.begin());
+}
+
 std::list<Client>
 Pulseaudio::get_clients() {
     std::list<Client> clients;
@@ -194,12 +204,33 @@ Pulseaudio::set_volume(Device& device, pa_volume_t new_volume) {
 }
 
 void
+Pulseaudio::set_volume(SinkInput& input, pa_volume_t new_volume) {
+    if (new_volume > PA_VOLUME_MAX) {
+        new_volume = PA_VOLUME_MAX;
+    }
+
+    pa_cvolume* new_cvolume = pa_cvolume_set(&input.volume, input.volume.channels, new_volume);
+    pa_operation* op = pa_context_set_sink_input_volume(context, input.index, new_cvolume, success_cb, NULL);
+
+    iterate(op);
+    pa_operation_unref(op);
+}
+
+void
 Pulseaudio::set_mute(Device& device, bool mute) {
     pa_operation* op;
     if (device.type == SINK)
         op = pa_context_set_sink_mute_by_index(context, device.index, (int) mute, success_cb, NULL);
     else
         op = pa_context_set_source_mute_by_index(context, device.index, (int) mute, success_cb, NULL);
+    iterate(op);
+    pa_operation_unref(op);
+}
+
+void
+Pulseaudio::set_mute(SinkInput& sink, bool mute) {
+    pa_operation* op;
+    op = pa_context_set_sink_input_mute(context, sink.index, (int) mute, success_cb, NULL);
     iterate(op);
     pa_operation_unref(op);
 }
