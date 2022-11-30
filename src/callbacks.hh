@@ -21,4 +21,5 @@ void source_list_cb(pa_context *c, const pa_source_info *i, int eol, void *raw);
 void stream_list_cb(pa_context *context, const pa_ext_stream_restore_info *i, int eol, void *raw);
 void server_info_cb(pa_context* context, const pa_server_info* i, void* raw);
 void success_cb(pa_context* context, int success, void* raw);
+void client_list_cb(pa_context *c, const pa_client_info *i, int eol, void *raw);
 

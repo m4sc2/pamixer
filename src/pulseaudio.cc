@@ -99,7 +99,19 @@ Pulseaudio::get_sink_inputs() {
     iterate(op);
     pa_operation_unref(op);
 
+    std::list<Client> clients = get_clients();
+
     return sinkInputs;
+}
+
+std::list<Client>
+Pulseaudio::get_clients() {
+    std::list<Client> clients;
+    pa_operation* op = pa_context_get_client_info_list(context, &client_list_cb, &clients);
+    iterate(op);
+    pa_operation_unref(op);
+
+    return clients;
 }
 
 Device

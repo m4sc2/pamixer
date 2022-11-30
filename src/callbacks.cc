@@ -59,6 +59,14 @@ void server_info_cb(pa_context* UNUSED(context), const pa_server_info* i, void* 
     info->default_source_name = i->default_source_name;
 }
 
+void client_list_cb(pa_context * UNUSED(c), const pa_client_info  *i, int eol, void *raw) {
+    if (eol != 0) return;
+
+    std::list<Client>* sources = (std::list<Client>*) raw;
+    Client s(i);
+    sources->push_back(s);
+}
+
 void success_cb(pa_context* UNUSED(context), int UNUSED(success), void* UNUSED(raw)) {
 }
 

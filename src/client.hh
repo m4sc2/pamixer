@@ -1,5 +1,5 @@
-#ifndef BINFO_H
-#define BINFO_H
+#ifndef CLIENT_H
+#define CLIENT_H
 
 /*
  * Copyright (C) 2022 m4sc
@@ -18,27 +18,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #include <pulse/pulseaudio.h>
 #include <pulse/ext-stream-restore.h>
 #include <string>
 
 
 /**
- * Class to basic properties of streams, sinks, sources, sink-inputs
+ * Class to store client information
  *
- * @see pa_cvolume
+ * @see pa_ext_stream_restore_info
  */
-class BasicInfo {
+class Client{
 public:
+	u_int32_t index;
     std::string name;
-    pa_cvolume volume;
-    pa_volume_t volume_avg;
-    int volume_percent;
-    bool mute;
+    u_int32_t owner_module;
+    std::string driver;
 
-protected:
-    void setVolume(const pa_cvolume* v);
+    Client(const pa_client_info* i);
 };
 
 #endif
