@@ -26,7 +26,7 @@
 /**
  * Class to store client information
  *
- * @see pa_ext_stream_restore_info
+ * @see pa_client_info
  */
 class Client{
 public:

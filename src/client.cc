@@ -22,8 +22,6 @@
 #include <cstring>
 #include <iostream>
 
-
-
 Client::Client(const pa_client_info* info) {
 	index = info->index;
 	name = info->name;
