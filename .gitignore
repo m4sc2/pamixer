@@ -6,7 +6,3 @@
 *.gz
 .cache
 /build/
-
-.cproject
-
-.project
